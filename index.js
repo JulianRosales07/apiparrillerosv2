@@ -1,4 +1,5 @@
 const express = require("express");
+// ✅ Configuración CORS recomendada
 const cors = require("cors");
 const dotenv = require("dotenv");
 const categoryRoutes = require("./routes/categories");
@@ -11,12 +12,14 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 3000;
 
-// ✅ Configuración CORS recomendada
+
+
 app.use(cors({
-  origin: "*", // En producción, deberías poner tu dominio aquí
-  methods: "GET,POST,PUT,PATCH,DELETE,OPTIONS",
-  allowedHeaders: "Origin,X-Requested-With,Content-Type,Accept,Authorization,x-admin-token",
+  origin: "*", // O tu dominio exacto
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "x-admin-token"],
 }));
+
 
 // Middleware JSON y archivos estáticos
 app.use(express.json());
