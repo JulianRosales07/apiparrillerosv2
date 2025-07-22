@@ -18,6 +18,11 @@ app.use("/uploads", express.static("uploads"));
 // Serve static files from public directory
 app.use(express.static("public"));
 
+// Healthcheck route
+app.get("/health", (_req, res) => {
+  res.status(200).json({ status: "ok", message: "Server is running" });
+});
+
 app.use("/api/categories", categoryRoutes);
 app.use("/api/menu-items", menuItemRoutes);
 app.use("/api/customization-options", customizationOptionRoutes);
@@ -25,6 +30,6 @@ app.use("/api/locations", locationRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/admin", adminRoutes); // Add direct admin route for frontend compatibility
 
-app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
+app.listen(port, "0.0.0.0", () => {
+  console.log(`Server running on port ${port}`);
 });
