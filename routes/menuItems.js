@@ -17,6 +17,13 @@ router.get('/', async (req, res) => {
   }
 });
 
+router.get('/busqueda/:id', async (req, res) => {
+  const data = JSON.parse(await fs.readFile(dbPath));
+  const menuItem = data.menuItems.find(i => i.id === parseInt(req.params.id));
+  if (!menuItem) return res.status(404).json({ message: 'Menu item not found' });
+  res.json(menuItem);
+});
+
 router.post('/', upload.single('image'), async (req, res) => {
   const data = JSON.parse(await fs.readFile(dbPath));
   const newId = data.menuItems.length ? Math.max(...data.menuItems.map(i => i.id)) + 1 : 1;
