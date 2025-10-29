@@ -14,19 +14,23 @@ const port = process.env.PORT || 3000;
 
 
 
+// CORS debe ir ANTES de cualquier ruta
 app.use(cors({
   origin: "*", // O tu dominio exacto
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization", "x-admin-token"],
+  credentials: true,
+  optionsSuccessStatus: 200
 }));
 
+// Manejar preflight requests explícitamente
+app.options("*", cors());
 
-// Middleware JSON y archivos estáticos
+// Middleware JSON
 app.use(express.json());
-app.use("/uploads", express.static("uploads"));
-app.use(express.static("public"));
+app.use(express.urlencoded({ extended: true }));
 
-// Rutas API
+// Ruta raíz - debe ir ANTES de express.static
 app.get("/", (_req, res) => {
   res.status(200).json({
     message: "API Sistema Parrilleros - Atención y Mantenimiento",
@@ -43,8 +47,17 @@ app.get("/", (_req, res) => {
   });
 });
 
+// Archivos estáticos
+app.use("/uploads", express.static("uploads"));
+
 app.get("/health", (_req, res) => {
   res.status(200).json({ status: "ok", message: "Server is running" });
+});
+
+// Logging middleware
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+  next();
 });
 
 app.use("/api/categories", categoryRoutes);
@@ -53,6 +66,24 @@ app.use("/api/customization-options", customizationOptionRoutes);
 app.use("/api/locations", locationRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/admin", adminRoutes); // opcional
+
+// Manejador de errores 404
+app.use((req, res) => {
+  res.status(404).json({ 
+    error: "Ruta no encontrada",
+    path: req.path,
+    method: req.method
+  });
+});
+
+// Manejador de errores global
+app.use((err, req, res, next) => {
+  console.error("Error:", err);
+  res.status(err.status || 500).json({ 
+    error: err.message || "Error interno del servidor",
+    path: req.path
+  });
+});
 
 // Iniciar servidor
 app.listen(port, "0.0.0.0", () => {
