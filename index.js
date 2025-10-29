@@ -41,4 +41,14 @@ app.use("/admin", adminRoutes); // opcional
 // Iniciar servidor
 app.listen(port, "0.0.0.0", () => {
   console.log(`✅ Server running on http://localhost:${port}`);
+  console.log("\n📋 Available Endpoints:");
+  console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+  console.log(`  GET    http://localhost:${port}/health`);
+  console.log(`  *      http://localhost:${port}/api/categories`);
+  console.log(`  *      http://localhost:${port}/api/menu-items`);
+  console.log(`  *      http://localhost:${port}/api/customization-options`);
+  console.log(`  *      http://localhost:${port}/api/locations`);
+  console.log(`  *      http://localhost:${port}/api/admin`);
+  console.log(`  *      http://localhost:${port}/admin`);
+  console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
 });
