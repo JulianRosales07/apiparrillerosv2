@@ -27,6 +27,22 @@ app.use("/uploads", express.static("uploads"));
 app.use(express.static("public"));
 
 // Rutas API
+app.get("/", (_req, res) => {
+  res.status(200).json({
+    message: "API Sistema Parrilleros - Atención y Mantenimiento",
+    version: "1.0 - Sugabase",
+    endpoints: {
+      health: "/health",
+      categories: "/api/categories",
+      menuItems: "/api/menu-items",
+      customizationOptions: "/api/customization-options",
+      locations: "/api/locations",
+      admin: "/api/admin",
+      adminAlt: "/admin"
+    }
+  });
+});
+
 app.get("/health", (_req, res) => {
   res.status(200).json({ status: "ok", message: "Server is running" });
 });
