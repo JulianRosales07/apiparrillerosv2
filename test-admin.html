@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Admin - Parrilleros</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        h1 { color: #333; margin-bottom: 10px; }
+        h2 { color: #f5576c; margin: 25px 0 15px; font-size: 1.3em; }
+        .subtitle { color: #666; margin-bottom: 30px; }
+        .section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        input, select {
+            padding: 10px;
+            margin: 8px 5px 8px 0;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        button {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            margin: 5px;
+            transition: transform 0.2s;
+        }
+        button:hover { transform: translateY(-2px); }
+        .response {
+            background: #1e1e1e;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #f5576c;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .stat-card h3 {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        .stat-card .value {
+            color: #333;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .order-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border-left: 4px solid #4CAF50;
+        }
+        .order-card.pending { border-left-color: #FFC107; }
+        .order-card.confirmed { border-left-color: #2196F3; }
+        .order-card.preparing { border-left-color: #FF9800; }
+        .order-card.ready { border-left-color: #4CAF50; }
+        .order-card.delivered { border-left-color: #9E9E9E; }
+        .order-card.cancelled { border-left-color: #F44336; }
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: bold;
+            margin: 5px;
+        }
+        .badge.pending { background: #FFF3CD; color: #856404; }
+        .badge.confirmed { background: #D1ECF1; color: #0C5460; }
+        .badge.preparing { background: #FFE5CC; color: #8B4513; }
+        .badge.ready { background: #D4EDDA; color: #155724; }
+        .badge.delivered { background: #E2E3E5; color: #383D41; }
+        .badge.cancelled { background: #F8D7DA; color: #721C24; }
+        .login-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .info { color: #17a2b8; margin: 10px 0; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>👨‍💼 Panel de Administración</h1>
+        <p class="subtitle">Gestión de pedidos y usuarios</p>
+
+        <!-- Login Admin -->
+        <div class="login-section">
+            <h2 style="color: white; margin-top: 0;">🔐 Login Administrador</h2>
+            <input type="email" id="adminEmail" placeholder="Email" value="admin@parrilleros.com" style="width: 250px;">
+            <input type="password" id="adminPassword" placeholder="Contraseña" value="admin123" style="width: 250px;">
+            <button onclick="loginAdmin()" style="background: white; color: #667eea;">Iniciar Sesión</button>
+            <div id="loginStatus" style="margin-top: 10px; font-weight: bold;"></div>
+        </div>
+
+        <!-- Estadísticas -->
+        <div class="section">
+            <h2>📊 Estadísticas</h2>
+            <button onclick="getStats()">Actualizar Estadísticas</button>
+            <div id="statsDisplay" class="stats-grid" style="display:none;"></div>
+        </div>
+
+        <!-- Todos los Pedidos -->
+        <div class="section">
+            <h2>📦 Gestión de Pedidos</h2>
+            <div>
+                <select id="filterStatus">
+                    <option value="">Todos los estados</option>
+                    <option value="pending">Pendientes</option>
+                    <option value="confirmed">Confirmados</option>
+                    <option value="preparing">En preparación</option>
+                    <option value="ready">Listos</option>
+                    <option value="delivered">Entregados</option>
+                    <option value="cancelled">Cancelados</option>
+                </select>
+                <select id="filterLocation">
+                    <option value="">Todas las sedes</option>
+                    <option value="sede-tamasagra">Tamasagra</option>
+                    <option value="sede-san-ignacio">San Ignacio</option>
+                    <option value="sede-las-cuadras">Las Cuadras</option>
+                </select>
+                <input type="number" id="filterLimit" placeholder="Límite" value="20" style="width: 100px;">
+                <button onclick="getAllOrders()">Buscar Pedidos</button>
+            </div>
+            <div id="ordersDisplay" style="margin-top: 20px;"></div>
+        </div>
+
+        <!-- Actualizar Estado -->
+        <div class="section">
+            <h2>🔄 Actualizar Estado de Pedido</h2>
+            <input type="number" id="updateOrderId" placeholder="ID del pedido" style="width: 150px;">
+            <select id="newStatus">
+                <option value="pending">Pendiente</option>
+                <option value="confirmed">Confirmado</option>
+                <option value="preparing">En preparación</option>
+                <option value="ready">Listo</option>
+                <option value="delivered">Entregado</option>
+                <option value="cancelled">Cancelado</option>
+            </select>
+            <button onclick="updateOrderStatus()">Actualizar Estado</button>
+            <div id="updateResponse" class="response" style="display:none;"></div>
+        </div>
+
+        <!-- Usuarios -->
+        <div class="section">
+            <h2>👥 Usuarios Registrados</h2>
+            <button onclick="getAllUsers()">Ver Usuarios</button>
+            <div id="usersResponse" class="response" style="display:none;"></div>
+        </div>
+
+        <!-- Pedidos de Usuario -->
+        <div class="section">
+            <h2>🔍 Pedidos de Usuario Específico</h2>
+            <input type="number" id="userIdSearch" placeholder="ID del usuario" style="width: 150px;">
+            <button onclick="getUserOrders()">Buscar Pedidos</button>
+            <div id="userOrdersResponse" class="response" style="display:none;"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3000/api';
+        let adminToken = localStorage.getItem('adminToken');
+
+        if (adminToken) {
+            document.getElementById('loginStatus').textContent = '✅ Sesión activa';
+            document.getElementById('loginStatus').style.color = '#4CAF50';
+        }
+
+        function showResponse(elementId, data, isError = false) {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.textContent = JSON.stringify(data, null, 2);
+            element.style.color = isError ? '#ff6b6b' : '#00ff00';
+        }
+
+        async function loginAdmin() {
+            try {
+                const response = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: document.getElementById('adminEmail').value,
+                        password: document.getElementById('adminPassword').value
+                    })
+                });
+                const data = await response.json();
+                
+                if (response.ok && data.token) {
+                    if (data.user.role !== 'admin') {
+                        document.getElementById('loginStatus').textContent = '❌ No tienes permisos de administrador';
+                        document.getElementById('loginStatus').style.color = '#F44336';
+                        return;
+                    }
+                    adminToken = data.token;
+                    localStorage.setItem('adminToken', adminToken);
+                    document.getElementById('loginStatus').textContent = '✅ Login exitoso como ' + data.user.name;
+                    document.getElementById('loginStatus').style.color = '#4CAF50';
+                } else {
+                    document.getElementById('loginStatus').textContent = '❌ ' + (data.error || 'Error al iniciar sesión');
+                    document.getElementById('loginStatus').style.color = '#F44336';
+                }
+            } catch (error) {
+                document.getElementById('loginStatus').textContent = '❌ Error: ' + error.message;
+                document.getElementById('loginStatus').style.color = '#F44336';
+            }
+        }
+
+        async function getStats() {
+            if (!adminToken) {
+                alert('Debes iniciar sesión como administrador');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/admin/orders/stats`, {
+                    headers: { 'Authorization': `Bearer ${adminToken}` }
+                });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    displayStats(data.stats);
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        function displayStats(stats) {
+            const display = document.getElementById('statsDisplay');
+            display.style.display = 'grid';
+            display.innerHTML = `
+                <div class="stat-card">
+                    <h3>Total Pedidos</h3>
+                    <div class="value">${stats.total}</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Pedidos Hoy</h3>
+                    <div class="value">${stats.todayOrders}</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Ingresos Totales</h3>
+                    <div class="value">$${stats.totalRevenue.toLocaleString()}</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Ingresos Hoy</h3>
+                    <div class="value">$${stats.todayRevenue.toLocaleString()}</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Pendientes</h3>
+                    <div class="value">${stats.byStatus.pending || 0}</div>
+                </div>
+                <div class="stat-card">
+                    <h3>En Preparación</h3>
+                    <div class="value">${stats.byStatus.preparing || 0}</div>
+                </div>
+            `;
+        }
+
+        async function getAllOrders() {
+            if (!adminToken) {
+                alert('Debes iniciar sesión como administrador');
+                return;
+            }
+
+            try {
+                const status = document.getElementById('filterStatus').value;
+                const locationId = document.getElementById('filterLocation').value;
+                const limit = document.getElementById('filterLimit').value;
+
+                let url = `${API_URL}/admin/orders?`;
+                if (status) url += `status=${status}&`;
+                if (locationId) url += `locationId=${locationId}&`;
+                if (limit) url += `limit=${limit}`;
+
+                const response = await fetch(url, {
+                    headers: { 'Authorization': `Bearer ${adminToken}` }
+                });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    displayOrders(data.orders);
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        function displayOrders(orders) {
+            const display = document.getElementById('ordersDisplay');
+            
+            if (orders.length === 0) {
+                display.innerHTML = '<p class="info">No se encontraron pedidos</p>';
+                return;
+            }
+
+            display.innerHTML = orders.map(order => `
+                <div class="order-card ${order.status}">
+                    <div style="display: flex; justify-content: space-between; align-items: start;">
+                        <div>
+                            <strong>Pedido #${order.id}</strong>
+                            <span class="badge ${order.status}">${order.status}</span>
+                            <div style="margin-top: 10px; color: #666; font-size: 14px;">
+                                <div>👤 ${order.user?.name || 'Usuario desconocido'} (${order.user?.email || 'N/A'})</div>
+                                <div>📞 ${order.user?.phone || 'N/A'}</div>
+                                <div>📍 ${order.locationId}</div>
+                                <div>🏠 ${order.deliveryAddress || 'Sin dirección'}</div>
+                                <div>📝 ${order.notes || 'Sin notas'}</div>
+                                <div>📅 ${new Date(order.createdAt).toLocaleString('es-CO')}</div>
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 24px; font-weight: bold; color: #4CAF50;">
+                                $${order.total.toLocaleString()}
+                            </div>
+                            <div style="margin-top: 10px; color: #666; font-size: 14px;">
+                                ${order.items.length} item(s)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function updateOrderStatus() {
+            if (!adminToken) {
+                alert('Debes iniciar sesión como administrador');
+                return;
+            }
+
+            try {
+                const orderId = document.getElementById('updateOrderId').value;
+                const status = document.getElementById('newStatus').value;
+
+                const response = await fetch(`${API_URL}/admin/orders/${orderId}/status`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${adminToken}`
+                    },
+                    body: JSON.stringify({ status })
+                });
+                const data = await response.json();
+                showResponse('updateResponse', data, !response.ok);
+                
+                if (response.ok) {
+                    // Actualizar lista de pedidos
+                    getAllOrders();
+                }
+            } catch (error) {
+                showResponse('updateResponse', { error: error.message }, true);
+            }
+        }
+
+        async function getAllUsers() {
+            if (!adminToken) {
+                alert('Debes iniciar sesión como administrador');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/admin/users`, {
+                    headers: { 'Authorization': `Bearer ${adminToken}` }
+                });
+                const data = await response.json();
+                showResponse('usersResponse', data, !response.ok);
+            } catch (error) {
+                showResponse('usersResponse', { error: error.message }, true);
+            }
+        }
+
+        async function getUserOrders() {
+            if (!adminToken) {
+                alert('Debes iniciar sesión como administrador');
+                return;
+            }
+
+            try {
+                const userId = document.getElementById('userIdSearch').value;
+                const response = await fetch(`${API_URL}/admin/users/${userId}/orders`, {
+                    headers: { 'Authorization': `Bearer ${adminToken}` }
+                });
+                const data = await response.json();
+                showResponse('userOrdersResponse', data, !response.ok);
+            } catch (error) {
+                showResponse('userOrdersResponse', { error: error.message }, true);
+            }
+        }
+    </script>
+</body>
+</html>

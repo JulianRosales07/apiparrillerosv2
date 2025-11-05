@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test API Autenticación - Parrilleros</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        h1 { color: #333; margin-bottom: 10px; }
+        h2 { color: #667eea; margin: 25px 0 15px; font-size: 1.3em; }
+        .subtitle { color: #666; margin-bottom: 30px; }
+        .section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border 0.3s;
+        }
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            margin: 5px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        button:active { transform: translateY(0); }
+        .response {
+            background: #1e1e1e;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .token-display {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            word-break: break-all;
+        }
+        .token-display strong { color: #856404; }
+        .success { color: #28a745; font-weight: bold; }
+        .error { color: #dc3545; font-weight: bold; }
+        .info { color: #17a2b8; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Test API Autenticación</h1>
+        <p class="subtitle">Prueba los endpoints de autenticación y pedidos</p>
+
+        <!-- Registro -->
+        <div class="section">
+            <h2>1. Registro de Usuario</h2>
+            <input type="email" id="regEmail" placeholder="Email" value="test@example.com">
+            <input type="password" id="regPassword" placeholder="Contraseña" value="password123">
+            <input type="text" id="regName" placeholder="Nombre completo" value="Juan Pérez">
+            <input type="text" id="regPhone" placeholder="Teléfono" value="3001234567">
+            <input type="text" id="regAddress" placeholder="Dirección" value="Calle 123 #45-67">
+            <button onclick="register()">Registrar</button>
+            <div id="regResponse" class="response" style="display:none;"></div>
+        </div>
+
+        <!-- Login -->
+        <div class="section">
+            <h2>2. Inicio de Sesión</h2>
+            <input type="email" id="loginEmail" placeholder="Email" value="test@example.com">
+            <input type="password" id="loginPassword" placeholder="Contraseña" value="password123">
+            <button onclick="login()">Iniciar Sesión</button>
+            <div id="loginResponse" class="response" style="display:none;"></div>
+        </div>
+
+        <!-- Token Display -->
+        <div id="tokenDisplay" class="token-display" style="display:none;">
+            <strong>🎫 Token guardado:</strong>
+            <div id="tokenValue" style="margin-top: 10px; font-family: monospace; font-size: 12px;"></div>
+        </div>
+
+        <!-- Usuario Actual -->
+        <div class="section">
+            <h2>3. Obtener Usuario Actual</h2>
+            <p class="info">Requiere estar autenticado</p>
+            <button onclick="getMe()">Obtener Mi Info</button>
+            <div id="meResponse" class="response" style="display:none;"></div>
+        </div>
+
+        <!-- Crear Pedido -->
+        <div class="section">
+            <h2>4. Crear Pedido</h2>
+            <p class="info">Requiere estar autenticado</p>
+            <textarea id="orderData" rows="10" placeholder="JSON del pedido">{
+  "items": [
+    {
+      "menuItemId": 1,
+      "name": "Burger parrillera sencilla",
+      "quantity": 2,
+      "price": 15000,
+      "customizations": []
+    }
+  ],
+  "locationId": "sede-tamasagra",
+  "deliveryAddress": "Calle 123 #45-67",
+  "notes": "Sin cebolla",
+  "total": 30000
+}</textarea>
+            <button onclick="createOrder()">Crear Pedido</button>
+            <div id="orderResponse" class="response" style="display:none;"></div>
+        </div>
+
+        <!-- Obtener Pedidos -->
+        <div class="section">
+            <h2>5. Obtener Mis Pedidos</h2>
+            <p class="info">Requiere estar autenticado</p>
+            <button onclick="getOrders()">Ver Mis Pedidos</button>
+            <div id="ordersResponse" class="response" style="display:none;"></div>
+        </div>
+
+        <!-- Obtener Pedido Específico -->
+        <div class="section">
+            <h2>6. Obtener Pedido Específico</h2>
+            <input type="number" id="orderId" placeholder="ID del pedido" value="1">
+            <button onclick="getOrder()">Obtener Pedido</button>
+            <div id="orderDetailResponse" class="response" style="display:none;"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3000/api';
+        let token = localStorage.getItem('token');
+
+        if (token) {
+            document.getElementById('tokenDisplay').style.display = 'block';
+            document.getElementById('tokenValue').textContent = token;
+        }
+
+        function showResponse(elementId, data, isError = false) {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.textContent = JSON.stringify(data, null, 2);
+            element.style.color = isError ? '#ff6b6b' : '#00ff00';
+        }
+
+        async function register() {
+            try {
+                const response = await fetch(`${API_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: document.getElementById('regEmail').value,
+                        password: document.getElementById('regPassword').value,
+                        name: document.getElementById('regName').value,
+                        phone: document.getElementById('regPhone').value,
+                        address: document.getElementById('regAddress').value
+                    })
+                });
+                const data = await response.json();
+                
+                if (response.ok && data.token) {
+                    token = data.token;
+                    localStorage.setItem('token', token);
+                    document.getElementById('tokenDisplay').style.display = 'block';
+                    document.getElementById('tokenValue').textContent = token;
+                }
+                
+                showResponse('regResponse', data, !response.ok);
+            } catch (error) {
+                showResponse('regResponse', { error: error.message }, true);
+            }
+        }
+
+        async function login() {
+            try {
+                const response = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: document.getElementById('loginEmail').value,
+                        password: document.getElementById('loginPassword').value
+                    })
+                });
+                const data = await response.json();
+                
+                if (response.ok && data.token) {
+                    token = data.token;
+                    localStorage.setItem('token', token);
+                    document.getElementById('tokenDisplay').style.display = 'block';
+                    document.getElementById('tokenValue').textContent = token;
+                }
+                
+                showResponse('loginResponse', data, !response.ok);
+            } catch (error) {
+                showResponse('loginResponse', { error: error.message }, true);
+            }
+        }
+
+        async function getMe() {
+            if (!token) {
+                showResponse('meResponse', { error: 'Debes iniciar sesión primero' }, true);
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/auth/me`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                showResponse('meResponse', data, !response.ok);
+            } catch (error) {
+                showResponse('meResponse', { error: error.message }, true);
+            }
+        }
+
+        async function createOrder() {
+            if (!token) {
+                showResponse('orderResponse', { error: 'Debes iniciar sesión primero' }, true);
+                return;
+            }
+
+            try {
+                const orderData = JSON.parse(document.getElementById('orderData').value);
+                const response = await fetch(`${API_URL}/orders`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(orderData)
+                });
+                const data = await response.json();
+                showResponse('orderResponse', data, !response.ok);
+            } catch (error) {
+                showResponse('orderResponse', { error: error.message }, true);
+            }
+        }
+
+        async function getOrders() {
+            if (!token) {
+                showResponse('ordersResponse', { error: 'Debes iniciar sesión primero' }, true);
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/orders`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                showResponse('ordersResponse', data, !response.ok);
+            } catch (error) {
+                showResponse('ordersResponse', { error: error.message }, true);
+            }
+        }
+
+        async function getOrder() {
+            if (!token) {
+                showResponse('orderDetailResponse', { error: 'Debes iniciar sesión primero' }, true);
+                return;
+            }
+
+            try {
+                const orderId = document.getElementById('orderId').value;
+                const response = await fetch(`${API_URL}/orders/${orderId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                showResponse('orderDetailResponse', data, !response.ok);
+            } catch (error) {
+                showResponse('orderDetailResponse', { error: error.message }, true);
+            }
+        }
+    </script>
+</body>
+</html>

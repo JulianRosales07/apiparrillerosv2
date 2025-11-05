@@ -1184,6 +1184,239 @@
       }
     ]
   },
+  "users": [
+    {
+      "id": 1,
+      "email": "admin@parrilleros.com",
+      "password": "$2b$10$bMKInsRG8oMojBdsZeIw5u7EOGFkT6xzipk/vPvlMT4Nk/.YJBKoe",
+      "name": "Administrador",
+      "phone": null,
+      "address": null,
+      "role": "admin",
+      "createdAt": "2025-11-02T03:07:38.518Z"
+    },
+    {
+      "id": 2,
+      "email": "test@example.com",
+      "password": "$2b$10$/rIXWkh3xN8iKQDtiVz9w.MuB1zqYatf7uZIV18/p9iyvCZjQdwl2",
+      "name": "Juan Pérez",
+      "phone": "3001234567",
+      "address": "Calle 123 #45-67",
+      "role": "customer",
+      "createdAt": "2025-11-02T03:08:03.750Z"
+    },
+    {
+      "id": 3,
+      "email": "julianrosales0703@hotmail.com",
+      "password": "$2b$10$S9brnBI97GZkl6VRShBGtut8lOmRS71fs0rFgrJ2MS2WMA38WWDaW",
+      "name": "JULIAN DAVID ROSALES PORTILLA",
+      "phone": "3186025827",
+      "address": "CRA 32A #3SUR-53 LA PRIMAVERA",
+      "role": "customer",
+      "createdAt": "2025-11-02T03:49:43.385Z"
+    }
+  ],
+  "orders": [
+    {
+      "id": 1,
+      "userId": 2,
+      "items": [
+        {
+          "menuItemId": 1,
+          "name": "Burger parrillera sencilla",
+          "quantity": 2,
+          "price": 15000,
+          "customizations": []
+        }
+      ],
+      "locationId": "sede-tamasagra",
+      "deliveryAddress": "Calle 123 #45-67",
+      "notes": "Sin cebolla",
+      "total": 30000,
+      "status": "pending",
+      "createdAt": "2025-11-02T03:08:10.456Z",
+      "updatedAt": "2025-11-02T05:22:43.020Z"
+    },
+    {
+      "id": 2,
+      "userId": 3,
+      "items": [
+        {
+          "menuItemId": 1,
+          "name": "Burger parrillera sencilla",
+          "quantity": 1,
+          "price": 15000,
+          "customizations": []
+        },
+        {
+          "menuItemId": 2,
+          "name": "Burger parrillera ranchera",
+          "quantity": 1,
+          "price": 17000,
+          "customizations": []
+        }
+      ],
+      "locationId": "sede-tamasagra",
+      "deliveryAddress": "CRA 32A #3SUR-53, LA PRIMAVERA",
+      "notes": null,
+      "total": 32000,
+      "status": "pending",
+      "createdAt": "2025-11-02T04:48:14.142Z",
+      "updatedAt": "2025-11-02T05:22:21.988Z"
+    },
+    {
+      "id": 3,
+      "userId": 3,
+      "items": [
+        {
+          "menuItemId": 6,
+          "name": "Burger parrillera especial",
+          "quantity": 1,
+          "price": 18000,
+          "customizations": [
+            {
+              "id": 1,
+              "name": "ad chorizo",
+              "price": 4000
+            }
+          ]
+        }
+      ],
+      "locationId": "sede-tamasagra",
+      "deliveryAddress": "CRA 32A #3SUR-53 , LA PRIMAVERA",
+      "notes": null,
+      "total": 22000,
+      "status": "preparing",
+      "createdAt": "2025-11-02T05:10:46.424Z",
+      "updatedAt": "2025-11-02T05:22:08.304Z"
+    },
+    {
+      "id": 4,
+      "userId": 3,
+      "items": [
+        {
+          "menuItemId": 2,
+          "name": "Burger parrillera ranchera",
+          "quantity": 1,
+          "price": 17000,
+          "customizations": []
+        }
+      ],
+      "locationId": "sede-tamasagra",
+      "deliveryAddress": "CRA 32A #3SUR-53 X, LA PRIMAVERA",
+      "notes": null,
+      "total": 17000,
+      "status": "pending",
+      "createdAt": "2025-11-02T05:18:05.309Z",
+      "updatedAt": "2025-11-02T05:22:48.354Z"
+    },
+    {
+      "id": 5,
+      "userId": 3,
+      "items": [
+        {
+          "menuItemId": 1,
+          "name": "Burger parrillera sencilla + Papas Francesas",
+          "quantity": 1,
+          "price": 21000,
+          "customizations": [
+            {
+              "id": 1,
+              "name": "ad chorizo",
+              "price": 4000
+            }
+          ]
+        }
+      ],
+      "locationId": "sede-tamasagra",
+      "deliveryAddress": "CRA 32A #3SUR-53 , LA PRIMAVERA",
+      "notes": null,
+      "total": 25000,
+      "status": "pending",
+      "createdAt": "2025-11-02T05:27:32.788Z",
+      "updatedAt": "2025-11-02T05:27:32.788Z"
+    },
+    {
+      "id": 6,
+      "userId": 3,
+      "items": [
+        {
+          "menuItemId": 3,
+          "name": "Burger parrillera beacon-chese + Papas Francesas",
+          "quantity": 1,
+          "price": 23000,
+          "customizations": []
+        }
+      ],
+      "locationId": "sede-tamasagra",
+      "deliveryAddress": "CRA 32A #3SUR-53 , LA PRIMAVERA",
+      "notes": null,
+      "total": 23000,
+      "status": "pending",
+      "createdAt": "2025-11-02T05:30:31.930Z",
+      "updatedAt": "2025-11-02T05:30:31.930Z"
+    },
+    {
+      "id": 7,
+      "userId": 3,
+      "items": [
+        {
+          "menuItemId": 2,
+          "name": "Burger parrillera ranchera + Papas Rústicas",
+          "quantity": 1,
+          "price": 23000,
+          "customizations": []
+        }
+      ],
+      "locationId": "sede-tamasagra",
+      "deliveryAddress": "CRA 32A #3SUR-53 , LA PRIMAVERA",
+      "notes": null,
+      "total": 23000,
+      "status": "pending",
+      "createdAt": "2025-11-02T05:31:18.120Z",
+      "updatedAt": "2025-11-02T05:31:18.120Z"
+    },
+    {
+      "id": 8,
+      "userId": 3,
+      "items": [
+        {
+          "menuItemId": 5,
+          "name": "Burger parrillera chicken crunch + Papas Rústicas",
+          "quantity": 1,
+          "price": 23000,
+          "customizations": []
+        }
+      ],
+      "locationId": "sede-tamasagra",
+      "deliveryAddress": "CRA 32A #3SUR-53 , LA PRIMAVERA",
+      "notes": null,
+      "total": 23000,
+      "status": "pending",
+      "createdAt": "2025-11-02T05:33:15.993Z",
+      "updatedAt": "2025-11-02T05:33:15.993Z"
+    },
+    {
+      "id": 9,
+      "userId": 3,
+      "items": [
+        {
+          "menuItemId": 10,
+          "name": "Burger parrillera volcanica 2.0 + Papas Rústicas",
+          "quantity": 1,
+          "price": 30000,
+          "customizations": []
+        }
+      ],
+      "locationId": "sede-tamasagra",
+      "deliveryAddress": "CRA 32A #3SUR-53, LA PRIMAVERA",
+      "notes": null,
+      "total": 30000,
+      "status": "pending",
+      "createdAt": "2025-11-02T05:35:35.856Z",
+      "updatedAt": "2025-11-02T05:35:35.856Z"
+    }
+  ],
   "locations": [
     {
       "id": "sede-tamasagra",
@@ -1414,5 +1647,6 @@
         66
       ]
     }
-  ]
+  ],
+  "carts": []
 }

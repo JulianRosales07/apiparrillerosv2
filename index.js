@@ -7,6 +7,10 @@ const menuItemRoutes = require("./routes/menuItems");
 const customizationOptionRoutes = require("./routes/customizationOptions");
 const locationRoutes = require("./routes/location");
 const adminRoutes = require("./routes/admin");
+const authRoutes = require("./routes/auth");
+const orderRoutes = require("./routes/orders");
+const adminOrderRoutes = require("./routes/adminOrders");
+const cartRoutes = require("./routes/cart");
 
 dotenv.config();
 const app = express();
@@ -42,7 +46,10 @@ app.get("/", (_req, res) => {
       customizationOptions: "/api/customization-options",
       locations: "/api/locations",
       admin: "/api/admin",
-      adminAlt: "/admin"
+      adminAlt: "/admin",
+      auth: "/api/auth",
+      orders: "/api/orders",
+      cart: "/api/cart"
     }
   });
 });
@@ -66,6 +73,10 @@ app.use("/api/customization-options", customizationOptionRoutes);
 app.use("/api/locations", locationRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/admin", adminRoutes); // opcional
+app.use("/api/auth", authRoutes);
+app.use("/api/orders", orderRoutes);
+app.use("/api/admin", adminOrderRoutes);
+app.use("/api/cart", cartRoutes);
 
 // Manejador de errores 404
 app.use((req, res) => {
@@ -97,5 +108,8 @@ app.listen(port, "0.0.0.0", () => {
   console.log(`  *      http://localhost:${port}/api/locations`);
   console.log(`  *      http://localhost:${port}/api/admin`);
   console.log(`  *      http://localhost:${port}/admin`);
+  console.log(`  🔐     http://localhost:${port}/api/auth`);
+  console.log(`  🛒     http://localhost:${port}/api/orders`);
+  console.log(`  🛍️     http://localhost:${port}/api/cart`);
   console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
 });
